@@ -3,15 +3,14 @@ import "package:flostoslista/screens/list_screen.dart";
 import "package:flostoslista/services/shopping_list_service.dart";
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final ShoppingListService shoppingListService;
+  const HomeScreen(this.shoppingListService, {super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ShoppingListService _shoppingListService = ShoppingListService();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    ListScreen(shoppingListService: _shoppingListService),
+                    ListScreen(shoppingListService: widget.shoppingListService),
               ),
             );
           },

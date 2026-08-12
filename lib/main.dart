@@ -1,12 +1,18 @@
 import "package:flutter/material.dart";
 import "package:flostoslista/screens/home_screen.dart";
+import "package:flostoslista/services/shopping_list_service.dart";
+import "package:flostoslista/repositories/local_shopping_list_repository.dart";
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final ShoppingListService _shoppingListService = ShoppingListService(
+    LocalShoppingListRepository(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: "Ostoslista",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
-      home: const HomeScreen(),
+      home: HomeScreen(_shoppingListService),
     );
   }
 }

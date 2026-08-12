@@ -57,14 +57,14 @@ class _ListScreenState extends State<ListScreen> {
                     icon: const Icon(Icons.delete),
                     onPressed: () {
                       setState(() {
-                        widget.shoppingListService.removeItem(index);
+                        widget.shoppingListService.removeItem(item.id);
                       });
                     },
                   ),
                   onChanged: (value) {
                     setState(() {
                       widget.shoppingListService.updatePurchased(
-                        index,
+                        item.id,
                         value ?? false,
                       );
                     });

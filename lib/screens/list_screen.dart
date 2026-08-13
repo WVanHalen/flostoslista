@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flostoslista/services/shopping_list_service.dart';
+import 'package:flostoslista/models/shopping_item.dart';
 
 class ListScreen extends StatefulWidget {
   final ShoppingListService shoppingListService;
@@ -11,11 +12,33 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   final TextEditingController _controller = TextEditingController();
+  late Future<List<ShoppingItem>> _itemsFuture;
 
-  void _addItem(String name) {
+  @override
+  void initState() {
+    super.initState();
+    _itemsFuture = widget.shoppingListService.items;
+  }
+
+  Future<void> _addItem(String name) async {
+    await widget.shoppingListService.addItem(name);
+    _controller.clear();
     setState(() {
-      widget.shoppingListService.addItem(name);
-      _controller.clear();
+      _itemsFuture = widget.shoppingListService.items;
+    });
+  }
+
+  Future<void> _removeItem(String id) async {
+    await widget.shoppingListService.removeItem(id);
+    setState(() {
+      _itemsFuture = widget.shoppingListService.items;
+    });
+  }
+
+  Future<void> _updatePurchased(String id, bool value) async {
+    await widget.shoppingListService.updatePurchased(id, value);
+    setState(() {
+      _itemsFuture = widget.shoppingListService.items;
     });
   }
 
@@ -34,42 +57,47 @@ class _ListScreenState extends State<ListScreen> {
         children: [
           Text("Tervetuloa ostoslistaan!", style: TextStyle(fontSize: 24)),
           Expanded(
-            child: ListView.builder(
-              itemCount: widget.shoppingListService.items.length,
-              itemBuilder: (context, index) {
-                final item = widget.shoppingListService.items[index];
+            child: FutureBuilder<List<ShoppingItem>>(
+              future: _itemsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final items = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
 
-                return CheckboxListTile(
-                  title: Text(
-                    item.name,
-                    style: TextStyle(
-                      decoration: item.isPurchased
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      color: item.isPurchased
-                          ? Theme.of(context).disabledColor
-                          : null,
-                    ),
-                  ),
-                  value: item.isPurchased,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  secondary: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      setState(() {
-                        widget.shoppingListService.removeItem(item.id);
-                      });
-                    },
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      widget.shoppingListService.updatePurchased(
-                        item.id,
-                        value ?? false,
+                      return CheckboxListTile(
+                        title: Text(
+                          item.name,
+                          style: TextStyle(
+                            decoration: item.isPurchased
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            color: item.isPurchased
+                                ? Theme.of(context).disabledColor
+                                : null,
+                          ),
+                        ),
+                        value: item.isPurchased,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        secondary: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            _removeItem(item.id);
+                          },
+                        ),
+                        onChanged: (value) {
+                          _updatePurchased(item.id, value ?? false);
+                        },
                       );
-                    });
-                  },
-                );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Virhe: ${snapshot.error}"));
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
               },
             ),
           ),

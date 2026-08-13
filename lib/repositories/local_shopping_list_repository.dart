@@ -9,27 +9,30 @@ class LocalShoppingListRepository implements ShoppingListRepository {
   ];
 
   @override
-  List<ShoppingItem> getItems() {
-    return List.unmodifiable(_items);
+  Future<List<ShoppingItem>> getItems() {
+    return Future.value(List.unmodifiable(_items));
   }
 
   @override
-  void addItem(String name) {
+  Future<void> addItem(String name) {
     final trimmedName = name.trim();
-    if (trimmedName.isEmpty) return;
+    if (trimmedName.isEmpty) return Future.value();
     _items.add(ShoppingItem(name: trimmedName, id: DateTime.now().toString()));
+    return Future.value();
   }
 
   @override
-  void removeItem(String id) {
+  Future<void> removeItem(String id) {
     _items.removeWhere((item) => item.id == id);
+    return Future.value();
   }
 
   @override
-  void updatePurchased(String id, bool value) {
+  Future<void> updatePurchased(String id, bool value) {
     final index = _items.indexWhere((item) => item.id == id);
     if (index != -1) {
       _items[index].isPurchased = value;
     }
+    return Future.value();
   }
 }

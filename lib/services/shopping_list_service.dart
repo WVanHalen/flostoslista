@@ -5,17 +5,17 @@ class ShoppingListService {
   final ShoppingListRepository _repository;
   ShoppingListService(this._repository);
 
-  List<ShoppingItem> get items => _repository.getItems();
+  Future<List<ShoppingItem>> get items => _repository.getItems();
 
-  void addItem(String name) {
-    _repository.addItem(name);
+  Future<void> addItem(String name) {
+    return _repository.addItem(name);
   }
 
-  void removeItem(String id) {
-    _repository.removeItem(id);
+  Future<void> removeItem(String id) {
+    return _repository.removeItem(id);
   }
 
-  void updatePurchased(String id, bool value) {
-    _repository.updatePurchased(id, value);
+  Future<void> updatePurchased(String id, bool value) {
+    return _repository.updatePurchased(id, value);
   }
 }

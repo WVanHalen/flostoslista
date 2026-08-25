@@ -17,18 +17,33 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text("Villkommen!"), centerTitle: true),
       body: Align(
         alignment: Alignment(0, -0.75),
-        child: ElevatedButton(
-          //TÄHÄN VOI LAITTAA COLUMNIN JOS HALUAA USEITA NAPPEJA
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ListScreen(shoppingListService: widget.shoppingListService),
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListScreen(
+                        shoppingListService: widget.shoppingListService,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text("Avaa ostoslista"),
               ),
-            );
-          },
-          child: const Text("Avaa ostoslista"),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  // Toinen toiminto, esim to-do -lista
+                },
+                child: const Text("Toinen toiminto"),
+              ),
+            ],
+          ),
         ),
       ),
     );

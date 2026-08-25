@@ -14,7 +14,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key, required this.shoppingListService});
+  const MyApp({super.key, required this.shoppingListService});
 
   final ShoppingListService shoppingListService;
 

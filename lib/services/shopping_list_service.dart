@@ -18,4 +18,8 @@ class ShoppingListService {
   Future<void> updatePurchased(String id, bool value) {
     return _repository.updatePurchased(id, value);
   }
+
+  Future<void> clearPurchasedItems() {
+    return _repository.clearPurchasedItems();
+  }
 }

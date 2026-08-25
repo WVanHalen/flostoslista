@@ -42,6 +42,53 @@ class _ListScreenState extends State<ListScreen> {
     });
   }
 
+  Future<void> _clearPurchasedItems() async {
+    await widget.shoppingListService.clearPurchasedItems();
+
+    if (!mounted) return;
+
+    setState(() {
+      _itemsFuture = widget.shoppingListService.items;
+    });
+  }
+
+  Future<void> _showClearPurchasedConfirmationDialog() async {
+    final items = await widget.shoppingListService.items;
+
+    if (!mounted) return;
+
+    if (!items.any((item) => item.isPurchased)) return;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Vahvista"),
+          content: const Text(
+            "Haluatko varmasti poistaa kaikki merkityt tuotteet?",
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Peruuta"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Poista"),
+              onPressed: () async {
+                final navigator = Navigator.of(dialogContext);
+                await _clearPurchasedItems();
+                navigator.pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -100,6 +147,19 @@ class _ListScreenState extends State<ListScreen> {
                 }
               },
             ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _showClearPurchasedConfirmationDialog();
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text("Poista ostetut"),
           ),
           Container(
             alignment: .bottomCenter,

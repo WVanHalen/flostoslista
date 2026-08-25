@@ -5,4 +5,5 @@ abstract class ShoppingListRepository {
   Future<void> addItem(String name);
   Future<void> removeItem(String id);
   Future<void> updatePurchased(String id, bool value);
+  Future<void> clearPurchasedItems();
 }

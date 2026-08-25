@@ -68,4 +68,10 @@ class LocalShoppingListRepository implements ShoppingListRepository {
       await _saveItems();
     }
   }
+
+  @override
+  Future<void> clearPurchasedItems() async {
+    _items.removeWhere((item) => item.isPurchased);
+    await _saveItems();
+  }
 }

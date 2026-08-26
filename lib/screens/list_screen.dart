@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flostoslista/services/shopping_list_service.dart';
 import 'package:flostoslista/models/shopping_item.dart';
-import "package:flostoslista/widgets/shopping_item_tile.dart";
+import "package:flostoslista/widgets/shopping_item_list.dart";
 
 class ListScreen extends StatefulWidget {
   final ShoppingListService shoppingListService;
@@ -31,6 +31,9 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _removeItem(String id) async {
     await widget.shoppingListService.removeItem(id);
+
+    if (!mounted) return;
+
     setState(() {
       _itemsFuture = widget.shoppingListService.items;
     });
@@ -38,6 +41,9 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _updatePurchased(String id, bool value) async {
     await widget.shoppingListService.updatePurchased(id, value);
+
+    if (!mounted) return;
+
     setState(() {
       _itemsFuture = widget.shoppingListService.items;
     });
@@ -110,19 +116,10 @@ class _ListScreenState extends State<ListScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final items = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-
-                      return ShoppingItemTile(
-                        item: item,
-                        onChanged: (value) {
-                          _updatePurchased(item.id, value ?? false);
-                        },
-                        onDelete: _removeItem,
-                      );
-                    },
+                  return ShoppingItemList(
+                    items: items,
+                    onChanged: _updatePurchased,
+                    onDelete: _removeItem,
                   );
                 } else if (snapshot.hasError) {
                   return Center(child: Text("Virhe: ${snapshot.error}"));

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import "package:flostoslista/models/shopping_item.dart";
 import "./shopping_item_tile.dart";
 
+typedef ItemChangedCallback = void Function(String id, bool value);
+
 class ShoppingItemList extends StatelessWidget {
   const ShoppingItemList({
     super.key,
@@ -11,7 +13,7 @@ class ShoppingItemList extends StatelessWidget {
   });
 
   final List<ShoppingItem> items;
-  final void Function(String, bool) onChanged;
+  final ItemChangedCallback onChanged;
   final ValueChanged<String> onDelete;
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flostoslista/services/shopping_list_service.dart';
 import 'package:flostoslista/models/shopping_item.dart';
 import "package:flostoslista/widgets/shopping_item_list.dart";
+import "package:flostoslista/widgets/clear_purchased_dialog.dart";
 
 class ListScreen extends StatefulWidget {
   final ShoppingListService shoppingListService;
@@ -23,6 +24,9 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _addItem(String name) async {
     await widget.shoppingListService.addItem(name);
+
+    if (!mounted) return;
+
     _controller.clear();
     setState(() {
       _itemsFuture = widget.shoppingListService.items;
@@ -66,31 +70,20 @@ class _ListScreenState extends State<ListScreen> {
 
     if (!items.any((item) => item.isPurchased)) return;
 
-    return showDialog<void>(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Vahvista"),
-          content: const Text(
-            "Haluatko varmasti poistaa kaikki merkityt tuotteet?",
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Peruuta"),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              child: const Text("Poista"),
-              onPressed: () async {
-                final navigator = Navigator.of(dialogContext);
-                await _clearPurchasedItems();
-                navigator.pop();
-              },
-            ),
-          ],
+        return ClearPurchasedDialog(
+          onCancel: () {
+            Navigator.of(dialogContext).pop();
+          },
+          onConfirm: () async {
+            final navigator = Navigator.of(dialogContext);
+            await _clearPurchasedItems();
+            if (!mounted) return;
+            navigator.pop();
+          },
         );
       },
     );
@@ -109,7 +102,10 @@ class _ListScreenState extends State<ListScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("Tervetuloa ostoslistaan!", style: TextStyle(fontSize: 24)),
+          const Text(
+            "Tervetuloa ostoslistaan!",
+            style: TextStyle(fontSize: 24),
+          ),
           Expanded(
             child: FutureBuilder<List<ShoppingItem>>(
               future: _itemsFuture,

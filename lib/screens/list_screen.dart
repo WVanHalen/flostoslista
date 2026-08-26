@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flostoslista/services/shopping_list_service.dart';
 import 'package:flostoslista/models/shopping_item.dart';
+import "package:flostoslista/widgets/shopping_item_tile.dart";
 
 class ListScreen extends StatefulWidget {
   final ShoppingListService shoppingListService;
@@ -114,29 +115,12 @@ class _ListScreenState extends State<ListScreen> {
                     itemBuilder: (context, index) {
                       final item = items[index];
 
-                      return CheckboxListTile(
-                        title: Text(
-                          item.name,
-                          style: TextStyle(
-                            decoration: item.isPurchased
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none,
-                            color: item.isPurchased
-                                ? Theme.of(context).disabledColor
-                                : null,
-                          ),
-                        ),
-                        value: item.isPurchased,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        secondary: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            _removeItem(item.id);
-                          },
-                        ),
+                      return ShoppingItemTile(
+                        item: item,
                         onChanged: (value) {
                           _updatePurchased(item.id, value ?? false);
                         },
+                        onDelete: _removeItem,
                       );
                     },
                   );
